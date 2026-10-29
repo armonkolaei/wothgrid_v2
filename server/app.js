@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { getDb } from './db.js';
+import { registerPortfolioRoutes } from './portfolioRoutes.js';
 
 const COOKIE = 'session';
 const SESSION_SECONDS = 60 * 60 * 8;
@@ -173,6 +174,8 @@ export function createApp() {
   app.get('/api/auth/me', requireAuth, (req, res) => {
     res.json({ email: req.user.email, name: req.user.name });
   });
+
+  registerPortfolioRoutes(app, requireAuth);
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 
