@@ -3,9 +3,12 @@ import AppShell from '../components/AppShell.jsx';
 import NetWorthChart from '../components/NetWorthChart.jsx';
 import AccountModal from '../components/AccountModal.jsx';
 import GroupsModal from '../components/GroupsModal.jsx';
+import AddModal from '../components/AddModal.jsx';
+import ConnectModal from '../components/ConnectModal.jsx';
+import ConnectionsModal from '../components/ConnectionsModal.jsx';
 import { api } from '../api.js';
 import { ACCOUNT_TYPES } from '../accountTypes.js';
-import { fmtMoney, fmtPct } from '../format.js';
+import { fmtAgo, fmtMoney, fmtPct } from '../format.js';
 
 const tone = (n, liability) => (n === 0 ? '' : (n > 0) !== liability ? 'pos' : 'neg');
 const arrow = (n) => (n > 0 ? '↑' : n < 0 ? '↓' : '');
@@ -22,11 +25,13 @@ function Delta({ amount, pct, liability }) {
   );
 }
 
-function Section({ title, rows, total, groupNames, onOpen, liability }) {
+function Section({ title, subtitle, action, rows, total, groupNames, onOpen, liability }) {
   return (
     <section className="holdings">
       <div className="holdings-head">
         <h2>{title}</h2>
+        {subtitle && <span className="muted holdings-sub">{subtitle}</span>}
+        {action}
         <strong>{fmtMoney(total)}</strong>
       </div>
       <div className="table-scroll">
@@ -106,10 +111,17 @@ export default function Dashboard() {
   const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
   const [showGroups, setShowGroups] = useState(false);
+  const [view, setView] = useState(null);
+  const [newType, setNewType] = useState(null);
+  const [connections, setConnections] = useState([]);
+  const [syncing, setSyncing] = useState(false);
+  const [flash, setFlash] = useState(null);
 
   const reload = useCallback(async () => {
     try {
-      setData(await api('/portfolio'));
+      const [portfolio, conns] = await Promise.all([api('/portfolio'), api('/connections')]);
+      setData(portfolio);
+      setConnections(conns);
       setError('');
     } catch (err) {
       setError(err.message);
@@ -119,6 +131,32 @@ export default function Dashboard() {
     reload();
   }, [reload]);
 
+  async function sync() {
+    setSyncing(true);
+    setFlash(null);
+    try {
+      const { results } = await api('/sync', { method: 'POST', body: {} });
+      const failed = results.filter((r) => r.status !== 'ok');
+      setFlash(
+        failed.length
+          ? { kind: 'error', text: `Could not sync ${failed.map((f) => f.name).join(', ')}. Open Manage connections for details.` }
+          : { kind: 'ok', text: 'Everything is up to date.' },
+      );
+      await reload();
+    } catch (err) {
+      setFlash({ kind: 'error', text: err.message });
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  function pickAddOption(key) {
+    setView(null);
+    if (key === 'bank') return setView('connect');
+    setNewType(key === 'real_estate' ? 'real_estate' : null);
+    setSelected('new');
+  }
+
   const groupNames = useMemo(() => new Map((data?.groups ?? []).map((g) => [g.id, g.name])), [data]);
 
   // A deleted group can leave the filter pointing at nothing.
@@ -127,13 +165,16 @@ export default function Dashboard() {
     (a) => activeFilter === 'all' || (activeFilter === 'none' ? !a.groupId : a.groupId === activeFilter),
   );
   const byValue = (list) => [...list].sort((a, b) => b.value - a.value);
-  const assets = byValue(visible.filter((a) => a.kind === 'asset'));
-  const liabilities = byValue(visible.filter((a) => a.kind === 'liability'));
+  const banks = byValue(visible.filter((a) => a.synced));
+  const assets = byValue(visible.filter((a) => a.kind === 'asset' && !a.synced));
+  const liabilities = byValue(visible.filter((a) => a.kind === 'liability' && !a.synced));
   const sum = (list) => list.reduce((n, a) => n + a.value, 0);
   const account = selected && selected !== 'new' ? data?.accounts.find((a) => a.id === selected) : null;
+  const needsAttention = connections.some((c) => c.status === 'needs_reauth');
+  const lastSync = connections.map((c) => c.lastSyncAt).filter(Boolean).sort().at(-1);
 
   return (
-    <AppShell onAdd={() => data && setSelected('new')}>
+    <AppShell onAdd={() => data && setView('add')}>
       <main className="dash">
         {error && <p className="error" role="alert">{error}</p>}
         {!data && !error && <p className="muted">Loading…</p>}
@@ -161,7 +202,7 @@ export default function Dashboard() {
               {data.accounts.length === 0 && (
                 <div className="chart-empty">
                   <p>Add your first holding to start tracking your net worth.</p>
-                  <button className="dbtn primary" onClick={() => setSelected('new')}>Add a holding</button>
+                  <button className="dbtn primary" onClick={() => setView('add')}>Add a holding</button>
                 </div>
               )}
               <NetWorthChart series={data.series} />
@@ -183,20 +224,75 @@ export default function Dashboard() {
                 <button className="pill ghost" onClick={() => setShowGroups(true)}>＋ Groups</button>
               </div>
               <div className="toolbar-actions">
-                <button className="dbtn primary" disabled title="Automatic syncing is coming soon">⟳ Sync</button>
+                <button
+                  className="dbtn primary"
+                  disabled={syncing || connections.length === 0}
+                  onClick={sync}
+                  title={connections.length ? 'Sync connected institutions now' : 'Connect a bank or brokerage to enable syncing'}
+                >
+                  {syncing ? 'Syncing…' : '⟳ Sync'}
+                </button>
                 <button className="dbtn primary" onClick={() => exportCsv(data, groupNames)}>Export CSV</button>
-                <button className="dbtn primary" onClick={() => setSelected('new')}>＋ Add holding</button>
+                <button className="dbtn primary" onClick={() => setView('add')}>＋ Add holding</button>
               </div>
             </div>
 
+            {flash && <p className={`flash ${flash.kind}`} role="status">{flash.text}</p>}
+            {needsAttention && !flash && (
+              <p className="flash error" role="alert">
+                A connection needs a new API token.{' '}
+                <button className="link-btn" onClick={() => setView('connections')}>Fix it</button>
+              </p>
+            )}
+
+            {connections.length > 0 && (
+              <Section
+                title="Banks & Brokerages"
+                subtitle={lastSync ? `Synced ${fmtAgo(lastSync)} · refreshes daily` : 'Waiting for first sync'}
+                action={<button className="link-btn" onClick={() => setView('connections')}>Manage connections</button>}
+                rows={banks}
+                total={sum(banks)}
+                groupNames={groupNames}
+                onOpen={setSelected}
+              />
+            )}
             <Section title="Assets" rows={assets} total={sum(assets)} groupNames={groupNames} onOpen={setSelected} />
             <Section title="Liabilities" rows={liabilities} total={sum(liabilities)} groupNames={groupNames} onOpen={setSelected} liability />
           </>
         )}
       </main>
 
+      {view === 'add' && <AddModal onClose={() => setView(null)} onPick={pickAddOption} />}
+      {view === 'connect' && (
+        <ConnectModal
+          onClose={() => setView(null)}
+          onBack={() => setView('add')}
+          onConnected={async (conn) => {
+            setFlash(
+              conn.warning
+                ? { kind: 'error', text: conn.warning }
+                : { kind: 'ok', text: `${conn.name} connected. ${conn.accounts} account${conn.accounts === 1 ? '' : 's'} imported.` },
+            );
+            await reload();
+          }}
+        />
+      )}
+      {view === 'connections' && (
+        <ConnectionsModal
+          connections={connections}
+          onClose={() => setView(null)}
+          onChanged={reload}
+          onAdd={() => setView('connect')}
+        />
+      )}
       {selected === 'new' && (
-        <AccountModal groups={data.groups} onClose={() => setSelected(null)} onChanged={reload} />
+        <AccountModal
+          groups={data.groups}
+          defaultType={newType ?? undefined}
+          title={newType === 'real_estate' ? 'Add real estate' : undefined}
+          onClose={() => setSelected(null)}
+          onChanged={reload}
+        />
       )}
       {account && (
         <AccountModal key={account.id} account={account} groups={data.groups} onClose={() => setSelected(null)} onChanged={reload} />

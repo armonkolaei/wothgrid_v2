@@ -181,9 +181,10 @@ export function registerPortfolioRoutes(app, requireAuth) {
     if (TYPES[existing.type] !== TYPES[d.type]) {
       return res.status(400).json({ error: 'An asset cannot be changed into a liability' });
     }
+    const type = existing.connectionId ? existing.type : d.type;
     await accounts.updateOne(
       { _id: aid.data, userId },
-      { $set: { name: d.name, type: d.type, groupId: d.groupId ?? null } },
+      { $set: { name: d.name, type, groupId: d.groupId ?? null } },
     );
     res.json({ ok: true });
   }));
@@ -192,6 +193,10 @@ export function registerPortfolioRoutes(app, requireAuth) {
     const aid = id.safeParse(req.params.id);
     if (!aid.success) return res.status(404).json({ error: 'Not found' });
     const userId = uid(req);
+    const target = await (await col('accounts')).findOne({ _id: aid.data, userId });
+    if (target?.connectionId) {
+      return res.status(400).json({ error: 'Disconnect the institution to remove its accounts' });
+    }
     const r = await (await col('accounts')).deleteOne({ _id: aid.data, userId });
     if (!r.deletedCount) return res.status(404).json({ error: 'Not found' });
     await (await col('transactions')).deleteMany({ userId, accountId: aid.data });
@@ -202,7 +207,15 @@ export function registerPortfolioRoutes(app, requireAuth) {
   async function ownedAccount(req, res) {
     const aid = id.safeParse(req.params.id);
     const account = aid.success && (await (await col('accounts')).findOne({ _id: aid.data, userId: uid(req) }));
-    if (!account) res.status(404).json({ error: 'Not found' });
+    if (!account) {
+      res.status(404).json({ error: 'Not found' });
+      return null;
+    }
+    // Synced balances come from the institution, so manual edits would be overwritten.
+    if (req.method !== 'GET' && account.connectionId) {
+      res.status(400).json({ error: 'Synced accounts update automatically' });
+      return null;
+    }
     return account;
   }
 

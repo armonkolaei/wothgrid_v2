@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import Modal from './Modal.jsx';
 import { api } from '../api.js';
 import { ACCOUNT_TYPES, TX_LABELS, typesOfKind } from '../accountTypes.js';
-import { fmtDate, fmtMoney, todayISO } from '../format.js';
+import { fmtAgo, fmtDate, fmtMoney, todayISO } from '../format.js';
 
-function TypeSelect({ value, onChange, kind }) {
+function TypeSelect({ value, onChange, kind, disabled }) {
   const groups = kind ? [[kind, typesOfKind(kind)]] : [['asset', typesOfKind('asset')], ['liability', typesOfKind('liability')]];
   return (
-    <select value={value} onChange={onChange}>
+    <select value={value} onChange={onChange} disabled={disabled}>
       {groups.map(([k, list]) => (
         <optgroup key={k} label={k === 'asset' ? 'Assets' : 'Liabilities'}>
           {list.map(([key, t]) => (
@@ -145,11 +145,66 @@ function Transactions({ account, onChanged }) {
   );
 }
 
-export default function AccountModal({ account, groups, onClose, onChanged }) {
+function Positions({ account }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    api(`/accounts/${account.id}/positions`).then(setData).catch((e) => setError(e.message));
+  }, [account.id, account.value]);
+
+  return (
+    <section className="tx">
+      <h3>Holdings</h3>
+      {error && <p className="error" role="alert">{error}</p>}
+      {!data && !error && <p className="muted">Loading…</p>}
+      {data && (
+        <>
+          <p className="muted">
+            Cash: <strong>{fmtMoney(data.cash)}</strong>
+            {data.syncedAt && ` · updated ${fmtAgo(data.syncedAt)}`}
+          </p>
+          {data.positions.length === 0 ? (
+            <p className="muted">No open positions.</p>
+          ) : (
+            <div className="tx-scroll">
+              <table className="tx-table pos-table">
+                <thead>
+                  <tr>
+                    <th>Symbol</th>
+                    <th className="amt">Qty</th>
+                    <th className="amt">Price</th>
+                    <th className="amt">Market value</th>
+                    <th className="amt">Open P&amp;L</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.positions.map((p) => (
+                    <tr key={p.symbol}>
+                      <td>{p.symbol} <small className="muted">{p.currency}</small></td>
+                      <td className="amt">{p.quantity}</td>
+                      <td className="amt">{fmtMoney(p.price)}</td>
+                      <td className="amt">{fmtMoney(p.marketValue)}</td>
+                      <td className={`amt ${p.openPnl < 0 ? 'neg' : p.openPnl > 0 ? 'pos' : ''}`}>{fmtMoney(p.openPnl)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <p className="muted small-note">
+            The account value above is converted to CAD by your institution. Position amounts are shown in their trading currency.
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+
+export default function AccountModal({ account, groups, defaultType, title, onClose, onChanged }) {
   const isNew = !account;
   const [form, setForm] = useState({
     name: account?.name ?? '',
-    type: account?.type ?? 'chequing',
+    type: account?.type ?? defaultType ?? 'chequing',
     groupId: account?.groupId ?? '',
     openingBalance: '',
     openingDate: todayISO(),
@@ -196,7 +251,7 @@ export default function AccountModal({ account, groups, onClose, onChanged }) {
   }
 
   return (
-    <Modal title={isNew ? 'Add a holding' : account.name} onClose={onClose} wide={!isNew}>
+    <Modal title={isNew ? title ?? 'Add a holding' : account.name} onClose={onClose} wide={!isNew}>
       <form className="dform" onSubmit={submit}>
         <label>
           Name
@@ -205,7 +260,7 @@ export default function AccountModal({ account, groups, onClose, onChanged }) {
         <div className="row2">
           <label>
             Type
-            <TypeSelect value={form.type} onChange={set('type')} kind={isNew ? null : account.kind} />
+            <TypeSelect value={form.type} onChange={set('type')} kind={isNew ? null : account.kind} disabled={account?.synced} />
           </label>
           <label>
             Group
@@ -231,15 +286,16 @@ export default function AccountModal({ account, groups, onClose, onChanged }) {
         )}
         {error && <p className="error" role="alert">{error}</p>}
         <div className="modal-actions">
-          {!isNew && (
+          {!isNew && !account.synced && (
             <button type="button" className="dbtn danger" onClick={remove}>Delete</button>
           )}
+          {account?.synced && <span className="muted small-note">Synced account. Disconnect the institution to remove it.</span>}
           <span className="spacer" />
           <button type="button" className="dbtn ghost" onClick={onClose}>{isNew ? 'Cancel' : 'Close'}</button>
           <button className="dbtn primary" disabled={busy}>{isNew ? 'Add' : 'Save changes'}</button>
         </div>
       </form>
-      {!isNew && <Transactions account={account} onChanged={onChanged} />}
+      {!isNew && (account.synced ? <Positions account={account} /> : <Transactions account={account} onChanged={onChanged} />)}
     </Modal>
   );
 }

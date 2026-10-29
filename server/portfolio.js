@@ -60,6 +60,8 @@ export function summarize({ accounts, groups, transactions }, today = todayStr()
       name: a.name,
       type: a.type,
       kind: TYPES[a.type],
+      synced: Boolean(a.connectionId),
+      connectionId: a.connectionId ?? null,
       groupId: groupNames.has(a.groupId) ? a.groupId : null,
       value: round2(value),
       change: round2(change),

@@ -15,3 +15,12 @@ export const fmtDate = (s) =>
   new Date(`${s}T00:00:00`).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
 export const fmtShortDate = (s) =>
   new Date(`${s}T00:00:00`).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+
+export function fmtAgo(iso) {
+  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 48) return `${hours} h ago`;
+  return `${Math.round(hours / 24)} days ago`;
+}

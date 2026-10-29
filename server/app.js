@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { getDb } from './db.js';
 import { registerPortfolioRoutes } from './portfolioRoutes.js';
+import { registerConnectionRoutes } from './connectionRoutes.js';
 
 const COOKIE = 'session';
 const SESSION_SECONDS = 60 * 60 * 8;
@@ -176,6 +177,7 @@ export function createApp() {
   });
 
   registerPortfolioRoutes(app, requireAuth);
+  registerConnectionRoutes(app, requireAuth);
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 
