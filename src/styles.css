@@ -1,0 +1,79 @@
+:root { --purple: #6d28d9; --purple-dark: #5b21b6; --text: #111827; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Poppins, Inter, system-ui, sans-serif;
+  color: var(--text);
+  background: #fff;
+}
+a { color: inherit; text-decoration: none; }
+
+.navbar {
+  display: flex; align-items: center; gap: 2rem;
+  padding: 1rem 1.6rem; position: sticky; top: 0; background: #fff; z-index: 10;
+}
+.logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--purple); font-size: 1.1rem; }
+.nav-links { display: flex; gap: 1.6rem; flex: 1; margin-left: 1rem; }
+.nav-link { background: none; border: 0; font: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0; }
+.dropdown { position: relative; }
+.dropdown-menu {
+  display: none; position: absolute; top: 100%; left: 0; min-width: 180px; margin: 0; padding: 0.5rem 0;
+  list-style: none; background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgb(0 0 0 / 0.12);
+}
+.dropdown:hover .dropdown-menu, .dropdown:focus-within .dropdown-menu { display: block; }
+.dropdown-menu a { display: block; padding: 0.5rem 1rem; font-size: 0.9rem; }
+.dropdown-menu a:hover { background: #f5f3ff; }
+.nav-actions { display: flex; align-items: center; gap: 1.2rem; }
+.login-link { font-weight: 600; }
+.who { font-size: 0.9rem; color: #4b5563; }
+
+.btn-primary {
+  display: inline-block; border: 0; cursor: pointer; font: inherit; font-weight: 600; color: #fff;
+  background: var(--purple); padding: 0.9rem 1.6rem; border-radius: 8px;
+}
+.btn-primary:hover { background: var(--purple-dark); }
+.btn-primary.small { padding: 0.55rem 1.1rem; font-size: 0.9rem; }
+.btn-primary:disabled { opacity: 0.6; cursor: default; }
+
+.hero { display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 2rem; padding: 3rem 4.5rem 5rem; min-height: 80vh; }
+.review { font-size: 0.85rem; margin: 0 0 1.6rem; }
+.stars { background: #fde68a; color: #f59e0b; padding: 0.15rem 0.4rem; margin-right: 0.8rem; letter-spacing: 1px; }
+.hero h1 { margin: 0 0 2rem; font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.2; }
+.hero h1 .light { display: block; font-weight: 400; margin-bottom: 0.6rem; max-width: 12em; }
+.hero h1 .bold { display: block; font-weight: 700; max-width: 8em; }
+.hero-art { width: 100%; height: auto; }
+
+.section { padding: 4rem 4.5rem; max-width: 900px; }
+.section.alt { background: #f5f3ff; max-width: none; }
+.section h2 { margin-top: 0; }
+
+.auth-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; background: #f5f3ff; }
+.card {
+  display: flex; flex-direction: column; gap: 1rem; width: min(380px, 90vw); padding: 2rem;
+  background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgb(0 0 0 / 0.08);
+}
+.card h1 { margin: 0; font-size: 1.5rem; }
+label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.9rem; }
+label small { color: #6b7280; }
+input { padding: 0.65rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; }
+input:focus { outline: 2px solid var(--purple); border-color: transparent; }
+.error { margin: 0; color: #b91c1c; font-size: 0.9rem; }
+.switch { margin: 0; text-align: center; font-size: 0.9rem; }
+.switch a { color: var(--purple); font-weight: 600; }
+.card .subtitle { margin: 0.3rem 0 0; color: #6b7280; font-size: 0.9rem; }
+label.check { flex-direction: row; align-items: flex-start; gap: 0.6rem; }
+label.check input { margin-top: 0.2rem; }
+label.check a { color: var(--purple); text-decoration: underline; }
+.secure { margin: 0; text-align: center; font-size: 0.8rem; color: #6b7280; }
+.or { display: flex; align-items: center; gap: 0.8rem; color: #9ca3af; font-size: 0.85rem; }
+.or::before, .or::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+.btn-social { display: flex; align-items: center; justify-content: center; gap: 0.6rem; padding: 0.7rem; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font: inherit; font-weight: 500; }
+.btn-social:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-social small { font-size: 0.7rem; color: #9ca3af; }
+
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .navbar { justify-content: space-between; }
+  .hero { grid-template-columns: 1fr; padding: 2rem 1.5rem; }
+}
