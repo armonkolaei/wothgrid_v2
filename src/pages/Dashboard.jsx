@@ -116,6 +116,7 @@ export default function Dashboard() {
   const [connections, setConnections] = useState([]);
   const [syncing, setSyncing] = useState(false);
   const [flash, setFlash] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const reload = useCallback(async () => {
     try {
@@ -138,9 +139,7 @@ export default function Dashboard() {
       const { results } = await api('/sync', { method: 'POST', body: {} });
       const failed = results.filter((r) => r.status !== 'ok');
       setFlash(
-        failed.length
-          ? { kind: 'error', text: `Could not sync ${failed.map((f) => f.name).join(', ')}. Open Manage connections for details.` }
-          : { kind: 'ok', text: 'Everything is up to date.' },
+        failed.length ? null : { kind: 'ok', text: 'Everything is up to date.' },
       );
       await reload();
     } catch (err) {
@@ -170,7 +169,7 @@ export default function Dashboard() {
   const liabilities = byValue(visible.filter((a) => a.kind === 'liability' && !a.synced));
   const sum = (list) => list.reduce((n, a) => n + a.value, 0);
   const account = selected && selected !== 'new' ? data?.accounts.find((a) => a.id === selected) : null;
-  const needsAttention = connections.some((c) => c.status === 'needs_reauth');
+  const failing = connections.filter((c) => c.status === 'needs_reauth' || c.status === 'error');
   const lastSync = connections.map((c) => c.lastSyncAt).filter(Boolean).sort().at(-1);
 
   return (
@@ -238,12 +237,14 @@ export default function Dashboard() {
             </div>
 
             {flash && <p className={`flash ${flash.kind}`} role="status">{flash.text}</p>}
-            {needsAttention && !flash && (
-              <p className="flash error" role="alert">
-                A connection needs a new API token.{' '}
-                <button className="link-btn" onClick={() => setView('connections')}>Fix it</button>
+            {failing.map((c) => (
+              <p key={c.id} className="flash error" role="alert">
+                Could not sync {c.name}.{' '}
+                <button className="link-btn" onClick={() => { setEditId(c.id); setView('connections'); }}>
+                  Update API key
+                </button>
               </p>
-            )}
+            ))}
 
             {connections.length > 0 && (
               <Section
@@ -280,7 +281,8 @@ export default function Dashboard() {
       {view === 'connections' && (
         <ConnectionsModal
           connections={connections}
-          onClose={() => setView(null)}
+          initialEditId={editId}
+          onClose={() => { setView(null); setEditId(null); }}
           onChanged={reload}
           onAdd={() => setView('connect')}
         />

@@ -38,7 +38,6 @@ export function registerConnectionRoutes(app, requireAuth) {
       standardHeaders: true,
       legacyHeaders: false,
       keyGenerator: (req) => String(req.user?.sub ?? 'anon'),
-      validate: { keyGeneratorIpFallback: false },
       message: { error: message },
     });
   const connectLimiter = perUser(10, 60 * 60 * 1000, 'Too many connection attempts, try again later');

@@ -10,8 +10,8 @@ const STATUS = {
   needs_reauth: ['Needs a new token', 'bad'],
 };
 
-export default function ConnectionsModal({ connections, onClose, onChanged, onAdd }) {
-  const [editing, setEditing] = useState(null);
+export default function ConnectionsModal({ connections, onClose, onChanged, onAdd, initialEditId = null }) {
+  const [editing, setEditing] = useState(() => connections.find((c) => c.id === initialEditId) ?? null);
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -77,7 +77,7 @@ export default function ConnectionsModal({ connections, onClose, onChanged, onAd
                 </form>
               ) : (
                 <div className="conn-row-actions">
-                  <button className="dbtn ghost" onClick={() => { setEditing(c); setToken(''); setError(''); }}>Update token</button>
+                  <button className="dbtn ghost" onClick={() => { setEditing(c); setToken(''); setError(''); }}>Update API key</button>
                   <button className="dbtn danger" onClick={() => disconnect(c)}>Disconnect</button>
                 </div>
               )}
