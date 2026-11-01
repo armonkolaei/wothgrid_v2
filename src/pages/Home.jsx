@@ -2,34 +2,22 @@ import { Link } from 'react-router-dom';
 import HeroArt from '../components/HeroArt.jsx';
 import Blocks from '../components/Blocks.jsx';
 import { BRAND } from '../brand.js';
-import { PAGES } from '../content/pages.js';
+import { FREE_BLOCK } from '../content/pages.js';
 
 const B = BRAND.name;
 
 const HOME_BLOCKS = [
-  { type: 'stats', items: [
-    { value: '20,000+', label: 'institutions supported' },
-    { value: '49B+', label: 'in aggregated assets and investments' },
-    { value: '100,000+', label: 'users served' },
-  ] },
-  { type: 'split', eyebrow: 'Mobile', title: 'Get the full featured web app or on-the-go mobile app', body: [`${B} is available as a full featured web app or a mobile companion app on both iOS or Android. With ${B}, you always have your net worth in your pocket.`] },
-  { type: 'cards', title: 'Acclaimed and Praised by Media', subtitle: `${B} is already recognized for its state-of-the-art features, which include automated financial aggregation.`, cols: 3, items: [
-    { title: '“Best tracking option”', text: 'One of the best options for tracking your portfolio I... use it to aggregate all your investing accounts.' },
-    { title: '“Consolidated and simple”', text: `${B} is one of the best tools I came across for consolidating my investments and tracking portfolio.` },
-    { title: '“Automated aggregation”', text: 'State-of-the-art features, which include automated financial aggregation.' },
-  ] },
   { type: 'features', title: 'Designed for the financially-minded of every kind' },
   { type: 'split', eyebrow: 'Complete', title: 'Not Just Investments', body: ['"Worth Grid has absolutely revolutionized my approach to how I track my money and financial life."', `${B} keeps a historical view of how your net worth evolved over time and allows you to easily focus on the big picture while tracking your progress towards your financial, net worth or retirement goals.`] },
   { type: 'split', flip: true, eyebrow: 'Delightful', title: 'Best Portfolio Tracker', body: ['"All holdings, across various accounts and institutions on one screen. It\'s financial wizardry."', 'Track stocks, ETFs, funds, cryptocurrency, private investments and more. Keep track of your portfolio without the hassle. It makes it simple and automated.'] },
   { type: 'split', eyebrow: 'Personalized', title: 'Powerful Power Ups', body: ['"The multiple free and few paying power ups are priceless in my opinion!"', 'Create a budget, export to Google Spreadsheet, Excel or Yahoo! Portfolio, rebalance using Passiv, report on Capital Gains, Income or Fees. These are a few of the available Power Ups.'] },
   { type: 'checklist', title: 'Do Your Budget — master your financial health', body: ['"Easily follow all your expenses and set your budget goals"'], items: [
-    'Support for More Than 20,000+ Financial Institutions Worldwide',
-    'Support Yodlee, Plaid, Vezgo and Other Aggregators',
-    'Connect 500+ Crypto Currency Exchanges, Blockchains and Wallets',
-    'Automatically Updated Data Without Manual Intervention',
+    'Connect Questrade with a read-only API token',
+    'Add real estate, cash and other assets manually',
+    'Automatically updated data without manual intervention',
   ] },
-  { type: 'logos', title: 'Connect the institutions you already use', items: ['Robinhood', 'Charles Schwab', 'Fidelity', 'Citi', 'Bank of America', 'Vanguard', 'American Express', 'Binance', 'Coinbase'] },
-  PAGES['/pricing'].blocks[1],
+  { type: 'logos', title: 'Connect the institutions you already use', items: ['Questrade'] },
+  FREE_BLOCK,
   { type: 'cta', title: 'Simplify your financial life today', label: 'Get Started', to: '/signup' },
 ];
 

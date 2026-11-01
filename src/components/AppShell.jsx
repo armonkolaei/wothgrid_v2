@@ -5,12 +5,7 @@ import { BRAND } from '../brand.js';
 
 const TABS = ['Holdings', 'Budget', 'Transactions', 'Help'];
 
-const Crown = () => (
-  <svg width="26" height="26" viewBox="0 0 30 30" aria-hidden="true">
-    <circle cx="15" cy="15" r="15" fill="#9d5ce6" />
-    <path d="M7 20l-1-8 5 4 4-7 4 7 5-4-1 8z" fill="#fff" />
-  </svg>
-);
+const Crown = () => <img src="/logo.png" width="26" height="26" alt="" />;
 
 const Gauge = () => (
   <svg width="30" height="26" viewBox="0 0 32 28" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">

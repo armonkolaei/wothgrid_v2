@@ -1,4 +1,5 @@
 import { BRAND } from '../brand.js';
+import { LEGAL_PAGES } from './legal.js';
 
 const B = BRAND.name;
 
@@ -40,9 +41,18 @@ const techFoundation = (items) => ({
 
 const advantage = (title, items) => ({ type: 'cards', eyebrow: `The ${B} Advantage`, title, cols: 2, items });
 
+export const FREE_BLOCK = {
+  type: 'text',
+  eyebrow: 'Free, as is',
+  title: 'Use it at your own risk',
+  body: [
+    `${B} is provided free of charge and "as is", with no warranty. It is an informational tool, not financial advice, and figures may be delayed or inaccurate. You are responsible for how you use it and for any decisions you make. See the Terms of Service for details.`,
+  ],
+};
+
 const plansCta = {
   type: 'cta',
-  title: 'Thousands use Worth Grid to track their assets',
+  title: `Questions about ${B}?`,
   label: 'Talk to our Team',
 };
 
@@ -159,7 +169,7 @@ export const PAGES = {
       { type: 'split', eyebrow: 'Tools', title: 'A Wealth of Insights', body: [`Access comprehensive client reports—from income and risk to holdings, performance, and gains. ${B} helps you quickly spot underperforming assets, managed or not.`] },
       { type: 'split', flip: true, eyebrow: 'Communication', title: 'Give better advice', body: [`Get a complete view of your client's net worth to deliver smarter, personalized advice. ${B} helps you plan strategically, improve transparency, and reach goals faster.`] },
       { type: 'checklist', title: 'Everything in Basic plus:', items: ['Custom Connectivity and Features', 'Enhancements to Report', 'Personalised follow ups', 'And more!'] },
-      { type: 'cta', title: 'Thousands use Worth Grid to track their assets', label: 'Talk to our Team', to: '/contact?product=advisor' },
+      { type: 'cta', title: `Questions about ${B}?`, label: 'Talk to our Team', to: '/contact?product=advisor' },
     ],
   },
 
@@ -172,7 +182,7 @@ export const PAGES = {
       { type: 'split', flip: true, title: 'A Wealth of Insights', body: ['We aggregate every ownable asset giving your clients a true 360 view of their financial lives — from income sources and risk exposure to distribution of holdings, consolidated performance and realized gains.'] },
       { type: 'split', title: 'Empower the wealth management process', body: [`Gain access to a holistic view of your client's net worth to provide personalized and strategic advice and to deliver impactful financial planning. ${B} empowers you to give better advice, establish a better mix of assets and set appropriate goals. That’s not all, you’ll offer better transparency and reach your clients’ benchmarks faster.`] },
       { type: 'checklist', title: 'Everything in Basic plus:', items: ['Custom Connectivity and Features', 'Enhancements to Report', 'Personalised follow ups', 'And more!'] },
-      { type: 'cta', title: 'Thousands use Worth Grid to track their assets', label: 'Talk to our Team', to: '/contact?product=whitelabel' },
+      { type: 'cta', title: `Questions about ${B}?`, label: 'Talk to our Team', to: '/contact?product=whitelabel' },
     ],
   },
 
@@ -366,62 +376,28 @@ export const PAGES = {
   '/pricing': {
     title: 'Pricing',
     blocks: [
-      { type: 'hero', eyebrow: '360° Financial View', title: 'Next Level Portfolio Tracker', subtitle: 'Choose the plan that fits. Every plan starts with a 14-day free trial.' },
-      { type: 'pricing', plans: [
-        { name: 'Connect', monthly: '$6.25', yearly: '$50', features: ['Up to 3 connections', 'Access to Power Ups', 'Daily Syncs'] },
-        { name: 'Unlimited Connect', monthly: '$9.99', yearly: '$75', features: ['Everything in Connect plus:', 'Connect and synchronize all your accounts', 'Export & Sync to Google Sheets'] },
-        { name: 'Premium', monthly: '$19.99', yearly: '$150', highlight: true, features: ['Everything in Connect Unlimited plus:', 'Fully enjoy our Reports, Analysis and Budget tools', 'Access all the functionality of Holdings and Transactions Power-Ups', 'Organize stocks in portfolios and split asset classes', '15-min delayed stock prices'] },
-        { name: 'Prestige', monthly: '$29.99', yearly: '$250', features: ['Everything in Premium plus:', 'VIP Support', 'Custom attributes on manual assets', 'Plan and track your financial events', 'Access to Private Slack Community'] },
-      ] },
-      { type: 'split', eyebrow: `${B} Premium`, title: 'The Ultimate Way to Track and Plan your Financial Life Automagically.', body: ['Get even more of what you already love. Enjoy 15-minute delayed stock quotes for your holdings and net worth views so you can know exactly what your portfolio is worth right now. Organize your holdings into an unlimited number of portfolios you can track individually. Unlock dozens of additional features and power ups.'] },
-      { type: 'split', flip: true, eyebrow: 'Unmatched flexibility', title: 'Lose the Spreadsheet… or Automate It. Sync to Google Sheets or Excel.', body: ['Forget about repetitive data entry and logging into multiple accounts. Either use the Premium online or mobile views or automatically sync the aggregated balances, positions and transactions data to Google Sheets or Microsoft Excel 10X faster.'] },
-      { type: 'split', eyebrow: 'Best portfolio tracker', title: 'Up your Investing Game to Pick More Winners', body: ['Give the Holdings view a boost with 1d change and cost basis data, revenues and more. Categorize and group your holdings into portfolios. Premium allows you to save even more time tracking your investments.'] },
-      { type: 'text', eyebrow: 'Try Premium risk free', title: '60 Days Money Back Guarantee', body: ["Subscribers are fully protected by an unconditional money back guarantee. If you sign up and don't like Premium, just email us within 60 days and we'll give you a full refund – no questions asked."] },
-      { type: 'cta', title: 'Start your 14-day free trial', label: 'Get Started', to: '/signup' },
+      { type: 'hero', eyebrow: 'Free to use', title: `${B} is free`, subtitle: 'No subscription, no trial, no credit card.' },
+      FREE_BLOCK,
+      { type: 'cta', title: 'Create your free account', label: 'Get Started', to: '/signup' },
     ],
   },
 
   '/integrations': {
     title: 'Supported Institutions',
     blocks: [
-      { type: 'hero', title: 'Supported Institutions', subtitle: `${B} supports more than 20,000 financial institutions worldwide. A sample is below; the full searchable directory is coming soon.` },
-      { type: 'logos', title: 'Brokerages, banks & crypto', items: ['Robinhood', 'Charles Schwab', 'Fidelity', 'Citi', 'Bank of America', 'Vanguard', 'American Express', 'Binance', 'Coinbase', 'Questrade', 'Desjardins', 'National Bank', 'TD', 'BMO', 'RBC'] },
+      { type: 'hero', title: 'Supported Institutions', subtitle: `${B} currently connects to Questrade with a read-only API token. More institutions may be added over time.` },
+      { type: 'logos', title: 'Available now', items: ['Questrade'] },
       { type: 'cta', title: "Don't see your institution?", label: 'Contact us', to: '/contact' },
     ],
   },
 };
 
-const LEGAL = {
-  '/terms': 'Terms of service',
-  '/privacy-policy': 'Privacy Policy',
-  '/cookie-policy': 'Cookie Policy',
-  '/data-processing-agreement': 'Data Processing Agreement',
-  '/sub-processors': 'Sub-processor List',
-};
-
-for (const [path, title] of Object.entries(LEGAL)) {
+for (const [path, { title, updated, intro, sections }] of Object.entries(LEGAL_PAGES)) {
   PAGES[path] = {
     title,
     blocks: [
-      { type: 'hero', title },
-      { type: 'text', body: [`The ${title} for ${B} is being prepared and will be published here before launch.`] },
-    ],
-  };
-}
-
-const SOON = {
-  '/blog': ['Blog', 'Find the most interesting topics in finance!'],
-  '/knowledge-base': ['Knowledge Base', 'Help articles and guides are on the way.'],
-  '/status': ['Service Status', 'Live service status will be available here.'],
-  '/product-updates': ['Product Updates', "See what's new in Worth Grid."],
-};
-
-for (const [path, [title, subtitle]] of Object.entries(SOON)) {
-  PAGES[path] = {
-    title,
-    blocks: [
-      { type: 'hero', title, subtitle },
-      { type: 'text', body: ['Coming soon.'] },
+      { type: 'hero', title, subtitle: `Last updated ${updated}` },
+      { type: 'legal', intro, sections },
     ],
   };
 }

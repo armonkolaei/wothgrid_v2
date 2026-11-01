@@ -26,7 +26,6 @@ export const NAV = [
       { title: 'About Us', text: 'Meet the Team', to: '/about-us' },
       { title: 'Pricing', text: 'Find the best plan for you.', to: '/pricing' },
       { title: 'Contact', text: 'Have questions? Have insights?', to: '/contact' },
-      { title: 'Blog', text: 'Find the most interesting topics in finance!', to: '/blog' },
     ],
   },
 ];
@@ -40,7 +39,6 @@ export const FOOTER = [
       ['How it works', '/how-it-works'],
       ['Pricing', '/pricing'],
       ['API', '/developers'],
-      ['Blog', '/blog'],
     ],
   },
   {
@@ -64,22 +62,11 @@ export const FOOTER = [
     ],
   },
   {
-    heading: 'Resources',
-    links: [
-      ['Supported Institutions', '/integrations'],
-      ['Knowledge Base', '/knowledge-base'],
-      ['Service Status', '/status'],
-      ['Product Updates', '/product-updates'],
-    ],
-  },
-  {
     heading: 'Legal',
     links: [
       ['Terms of service', '/terms'],
       ['Privacy Policy', '/privacy-policy'],
       ['Cookie Policy', '/cookie-policy'],
-      ['Data Processing Agreement', '/data-processing-agreement'],
-      ['Sub-processor List', '/sub-processors'],
     ],
   },
 ];

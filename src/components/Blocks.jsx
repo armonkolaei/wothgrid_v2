@@ -135,16 +135,14 @@ const renderers = {
     </div></section>
   ),
 
-  pricing: ({ plans }) => (
-    <section className="block"><div className="wrap cards cols-4">
-      {plans.map((p) => (
-        <article className={`card-item plan${p.highlight ? ' highlight' : ''}`} key={p.name}>
-          <h3>{p.name}</h3>
-          <p className="price"><strong>{p.monthly}</strong> <span>/ month</span></p>
-          <p className="price-year"><strong>{p.yearly}</strong> <span>/ year</span></p>
-          <Link to="/signup" className="btn-primary small">Start 14 day trial</Link>
-          <ul>{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
-        </article>
+  legal: ({ intro, sections }) => (
+    <section className="block"><div className="wrap narrow legal">
+      <p>{intro}</p>
+      {sections.map((s) => (
+        <div key={s.heading}>
+          <h3>{s.heading}</h3>
+          <Paragraphs items={s.body} />
+        </div>
       ))}
     </div></section>
   ),
